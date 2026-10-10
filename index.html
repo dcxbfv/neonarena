@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#100b20">
-  <title> 🧮 Neon Arena | سنگ کاغذ قیچی</title>
+  <title>NEON ARENA | سنگ کاغذ قیچی</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,63 +16,56 @@
   <main class="game-container">
 
     <header class="header">
-      
-<header class="header">
-  <div class="arena-header">
-    <div class="logo">⚡ NEON ARENA</div>
+      <div class="arena-header">
+        <div class="logo">⚡ NEON ARENA</div>
 
-    <div class="difficulty-panel">
-      <label for="difficultySelect">⚡ درجه سختی بازی</label>
+        <div class="difficulty-panel">
+          <label for="difficultySelect">⚡ درجه سختی بازی</label>
 
-      <select id="difficultySelect">
-        <option value="easy">🟢 آسان</option>
-        <option value="medium" selected>🟣 متوسط</option>
-        <option value="hard">🔴 سخت</option>
-      </select>
+          <select id="difficultySelect">
+            <option value="easy">🟢 آسان</option>
+            <option value="medium" selected>🟣 متوسط</option>
+            <option value="hard">🔴 سخت</option>
+          </select>
 
-      <p  id="difficultyHint">
-        یک چالش متعادل برای شروع!
-      </p>
-    </div>
-  </div>
+          <p class="difficulty-hint" id="difficultyHint">
+            یک چالش متعادل برای شروع!
+          </p>
+        </div>
+      </div>
 
-  <p class="subtitle">نبردی برای اثبات مهارت تو!</p>
+      <p class="subtitle">نبردی برای اثبات مهارت تو!</p>
 
-  <span class="status">
-    <span class="status-dot"></span>
-    سیستم آماده است
-  </span>
-</header>
-
+      <span class="status">
+        <span class="status-dot"></span>
+        سیستم آماده است
+      </span>
     </header>
 
-<section class="target-score-panel">
-  <label for="targetScore">🎯 امتیاز هدف مسابقه</label>
+    <section class="target-score-panel">
+      <label for="targetScore">🎯 امتیاز هدف مسابقه</label>
 
-  <div class="target-score-control">
-    <input
-  
-  id="targetScore"
-  type="number"
-  min="1"
-  max="999"
-  step="1"
-  value="10"
-  inputmode="numeric"
-  lang="en"
-  dir="ltr"
-  aria-label="امتیاز هدف مسابقه"
->
+      <div class="target-score-control">
+        <input
+          id="targetScore"
+          type="number"
+          min="1"
+          max="999"
+          step="1"
+          value="10"
+          inputmode="numeric"
+          lang="en"
+          dir="ltr"
+          aria-label="امتیاز هدف مسابقه"
+        >
 
-    >
+        <span>امتیاز تا قهرمانی 🏆</span>
+      </div>
 
-    <span>امتیاز تا قهرمانی 🏆</span>
-  </div>
-
-  <p id="targetScoreHint">
-    قبل از شروع، امتیاز دلخواهت رو وارد کن.
-  </p>
-</section>
+      <p id="targetScoreHint">
+        قبل از شروع، امتیاز دلخواهت رو وارد کن.
+      </p>
+    </section>
 
     <section class="scoreboard">
       <div class="score-card player-card">
@@ -84,7 +77,7 @@
 
       <div class="score-center">
         <span>VS</span>
-        <small id="roundCount">دور ۰</small>
+        <small id="roundCount">دور 0</small>
       </div>
 
       <div class="score-card computer-card">
@@ -120,48 +113,46 @@
         <p id="resultMessage">یکی از گزینه‌های زیر را انتخاب کن.</p>
       </div>
 
-  <p class="difficulty-hint" id="difficultyHint">
-    یک چالش متعادل برای شروع!
-  </p>
-</div>
-
       <div class="choices">
-        <button class="choice-button rock" data-choice="rock">
+        <button class="choice-button rock" data-choice="rock" type="button">
           <span class="choice-emoji">🪨</span>
           <span>سنگ</span>
           <small>ROCK</small>
         </button>
 
-        <button class="choice-button paper" data-choice="paper">
+        <button class="choice-button paper" data-choice="paper" type="button">
           <span class="choice-emoji">📄</span>
           <span>کاغذ</span>
           <small>PAPER</small>
         </button>
 
-        <button class="choice-button scissors" data-choice="scissors">
+        <button class="choice-button scissors" data-choice="scissors" type="button">
           <span class="choice-emoji">✂️</span>
           <span>قیچی</span>
           <small>SCISSORS</small>
         </button>
       </div>
 
-      
-<div class="game-controls">
-  <button id="soundToggle" class="sound-button" type="button"
-          aria-pressed="true" aria-label="خاموش کردن صدا">
-    <span id="soundIcon">🔊</span>
-    <span id="soundText">صدا روشن</span>
-  </button>
+      <div class="game-controls">
+        <button
+          id="soundToggle"
+          class="sound-button"
+          type="button"
+          aria-pressed="true"
+          aria-label="خاموش کردن صدا"
+        >
+          <span id="soundIcon">🔊</span>
+          <span id="soundText">صدا روشن</span>
+        </button>
 
-  <button id="resetButton" class="reset-button" type="button">
-    ↻ شروع مجدد بازی
-  </button>
-</div>
-
+        <button id="resetButton" class="reset-button" type="button">
+          ↻ شروع مجدد بازی
+        </button>
+      </div>
     </section>
 
     <footer>
-      <p>ساخته شده توسط علی اصغریان ❤️  </p>
+      <p>ساخته شده توسط علی اصغریان ❤️</p>
       <span>NEON ARENA © 2026</span>
     </footer>
 
