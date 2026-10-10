@@ -1,133 +1,342 @@
 
 "use strict";
 
-"use strict";
+// ==========================================
+// NEON ARENA - Rock Paper Scissors
+// نسخه مسابقاتی با امتیاز هدف
+// ==========================================
 
-// ==============================
-// سیستم صوتی Neon Arena
-// ==============================
 
+// ---------- سیستم صوتی ----------
 let audioContext = null;
+let soundEnabled = true;
 
 function initAudio() {
   if (!audioContext) {
     const AudioContextClass =
       window.AudioContext || window.webkitAudioContext;
 
-    if (AudioContextClass) {
+    if (!AudioContextClass) return;
+
+    try {
       audioContext = new AudioContextClass();
+    } catch (error) {
+      console.warn("سیستم صوتی در دسترس نیست:", error);
+      return;
     }
   }
 
-  if (audioContext && audioContext.state === "suspended") {
-    audioContext.resume();
+  if (audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
   }
 }
 
-// ساخت صدای الکترونیکی
-function playTone(frequency, duration, type = "sine", volume = 0.08, delay = 0) {
-  if (!audioContext) return;
+function playTone(
+  frequency,
+  duration,
+  type = "sine",
+  volume = 0.06,
+  delay = 0
+) {
+  if (!soundEnabled || !audioContext) return;
 
-  const oscillator = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  const startTime = audioContext.currentTime + delay;
+  try {
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const startTime = audioContext.currentTime + delay;
 
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(frequency, startTime);
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(
+      frequency,
+      startTime
+    );
 
-  gain.gain.setValueAtTime(0.001, startTime);
-  gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.015);
-  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.exponentialRampToValueAtTime(
+      volume,
+      startTime + 0.015
+    );
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      startTime + duration
+    );
 
-  oscillator.connect(gain);
-  gain.connect(audioContext.destination);
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
 
-  oscillator.start(startTime);
-  oscillator.stop(startTime + duration + 0.02);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.03);
+
+    oscillator.addEventListener(
+      "ended",
+      () => {
+        oscillator.disconnect();
+        gain.disconnect();
+      },
+      { once: true }
+    );
+  } catch (error) {
+    console.warn("پخش صدا ناموفق بود:", error);
+  }
 }
 
-// صدای کلیک دکمه
 function playClickSound() {
-  playTone(650, 0.07, "square", 0.035);
+  playTone(650, 0.07, "square", 0.025);
   playTone(950, 0.05, "sine", 0.025, 0.04);
 }
 
-// صدای برد
 function playWinSound() {
-  playTone(523, 0.13, "sine", 0.07, 0);
-  playTone(659, 0.13, "sine", 0.07, 0.12);
-  playTone(784, 0.18, "sine", 0.08, 0.24);
-  playTone(1047, 0.28, "sine", 0.08, 0.38);
+  playTone(523, 0.13, "sine", 0.06, 0);
+  playTone(659, 0.13, "sine", 0.06, 0.12);
+  playTone(784, 0.18, "sine", 0.07, 0.24);
+  playTone(1047, 0.28, "sine", 0.07, 0.38);
 }
 
-// صدای باخت
 function playLoseSound() {
-  playTone(400, 0.16, "triangle", 0.07, 0);
-  playTone(320, 0.19, "triangle", 0.07, 0.15);
-  playTone(240, 0.28, "triangle", 0.07, 0.32);
+  playTone(400, 0.16, "triangle", 0.06, 0);
+  playTone(320, 0.19, "triangle", 0.06, 0.15);
+  playTone(240, 0.28, "triangle", 0.06, 0.32);
 }
 
-// صدای مساوی
 function playDrawSound() {
-  playTone(440, 0.12, "sine", 0.06, 0);
-  playTone(440, 0.12, "sine", 0.06, 0.17);
+  playTone(440, 0.12, "sine", 0.05, 0);
+  playTone(440, 0.12, "sine", 0.05, 0.17);
 }
 
-// صدای شروع مجدد
 function playResetSound() {
-  playTone(700, 0.09, "sine", 0.06, 0);
-  playTone(900, 0.12, "sine", 0.06, 0.09);
+  playTone(700, 0.09, "sine", 0.05, 0);
+  playTone(900, 0.12, "sine", 0.05, 0.09);
 }
 
-// عناصر صفحه
-const playerScoreElement = document.getElementById("playerScore");
-const computerScoreElement = document.getElementById("computerScore");
-const roundCountElement = document.getElementById("roundCount");
 
-const playerChoiceElement = document.getElementById("playerChoice");
-const computerChoiceElement = document.getElementById("computerChoice");
+// ---------- عناصر HTML ----------
+const playerScoreElement =
+  document.getElementById("playerScore");
 
-const playerChoiceName = document.getElementById("playerChoiceName");
-const computerChoiceName = document.getElementById("computerChoiceName");
+const computerScoreElement =
+  document.getElementById("computerScore");
 
-const resultBox = document.getElementById("resultBox");
-const resultTitle = document.getElementById("resultTitle");
-const resultMessage = document.getElementById("resultMessage");
+const roundCountElement =
+  document.getElementById("roundCount");
 
-const choiceButtons = document.querySelectorAll(".choice-button");
-const resetButton = document.getElementById("resetButton");
+const playerChoiceElement =
+  document.getElementById("playerChoice");
 
-// گزینه‌های بازی
+const computerChoiceElement =
+  document.getElementById("computerChoice");
+
+const playerChoiceName =
+  document.getElementById("playerChoiceName");
+
+const computerChoiceName =
+  document.getElementById("computerChoiceName");
+
+const resultBox =
+  document.getElementById("resultBox");
+
+const resultTitle =
+  document.getElementById("resultTitle");
+
+const resultMessage =
+  document.getElementById("resultMessage");
+
+const choiceButtons =
+  document.querySelectorAll(".choice-button");
+
+const resetButton =
+  document.getElementById("resetButton");
+
+const soundToggle =
+  document.getElementById("soundToggle");
+
+const soundIcon =
+  document.getElementById("soundIcon");
+
+const soundText =
+  document.getElementById("soundText");
+
+const difficultySelect =
+  document.getElementById("difficultySelect");
+
+const difficultyHint =
+  document.getElementById("difficultyHint");
+
+const targetScoreInput =
+  document.getElementById("targetScore");
+
+const targetScoreHint =
+  document.getElementById("targetScoreHint");
+
+
+// ---------- گزینه‌های بازی ----------
 const choices = {
   rock: {
     emoji: "🪨",
     name: "سنگ"
   },
+
   paper: {
     emoji: "📄",
     name: "کاغذ"
   },
+
   scissors: {
     emoji: "✂️",
     name: "قیچی"
   }
 };
 
-// وضعیت بازی
+
+// ---------- وضعیت بازی ----------
 let playerScore = 0;
 let computerScore = 0;
 let roundCount = 0;
+
 let isPlaying = false;
+let gameOver = false;
+let targetScore = 10;
 
-// انتخاب تصادفی کامپیوتر
-function getComputerChoice() {
-  const options = Object.keys(choices);
-  const randomIndex = Math.floor(Math.random() * options.length);
 
-  return options[randomIndex];
+// ---------- بررسی عناصر ضروری ----------
+if (
+  !playerScoreElement ||
+  !computerScoreElement ||
+  !roundCountElement ||
+  !playerChoiceElement ||
+  !computerChoiceElement ||
+  !playerChoiceName ||
+  !computerChoiceName ||
+  !resultBox ||
+  !resultTitle ||
+  !resultMessage ||
+  !resetButton ||
+  !targetScoreInput
+) {
+  console.error(
+    "بعضی از عناصر HTML بازی پیدا نشدند. index.html را بررسی کن."
+  );
 }
 
-// تشخیص نتیجه
+
+// ---------- تعیین امتیاز هدف ----------
+function readTargetScore() {
+  const value = Number(targetScoreInput.value);
+
+  if (
+    !Number.isSafeInteger(value) ||
+    value < 1 ||
+    value > 999
+  ) {
+    return null;
+  }
+
+  return value;
+}
+
+function updateTargetHint(message) {
+  if (targetScoreHint) {
+    targetScoreHint.textContent = message;
+  }
+}
+
+function handleTargetScoreChange() {
+  // بعد از شروع مسابقه، هدف تا ریست بعدی ثابت می‌ماند.
+  if (roundCount > 0 || gameOver || isPlaying) {
+    targetScoreInput.value = targetScore;
+
+    updateTargetHint(
+      `هدف این مسابقه ${targetScore} امتیاز است. برای تغییر، بازی را از نو شروع کن.`
+    );
+
+    return;
+  }
+
+  const value = readTargetScore();
+
+  if (value === null) {
+    targetScoreInput.value = targetScore;
+
+    updateTargetHint(
+      "عدد هدف باید یک عدد صحیح بین ۱ تا ۹۹۹ باشد."
+    );
+
+    return;
+  }
+
+  targetScore = value;
+  targetScoreInput.value = targetScore;
+
+  updateTargetHint(
+    `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
+  );
+}
+
+targetScoreInput.addEventListener(
+  "change",
+  handleTargetScoreChange
+);
+
+targetScoreInput.addEventListener(
+  "input",
+  () => {
+    if (roundCount > 0 || gameOver || isPlaying) {
+      targetScoreInput.value = targetScore;
+      return;
+    }
+
+    const value = readTargetScore();
+
+    if (value !== null) {
+      targetScore = value;
+
+      updateTargetHint(
+        `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
+      );
+    }
+  }
+);
+
+
+// ---------- انتخاب کامپیوتر ----------
+function getComputerChoice(playerChoice) {
+  const counterMoves = {
+    rock: "paper",
+    paper: "scissors",
+    scissors: "rock"
+  };
+
+  const difficulty = difficultySelect
+    ? difficultySelect.value
+    : "medium";
+
+  const counterProbability = {
+    easy: 0.20,
+    medium: 0.50,
+    hard: 0.80
+  };
+
+  const probability =
+    counterProbability[difficulty] ?? 0.50;
+
+  // احتمال انتخاب حرکت برنده بر اساس درجه سختی
+  if (Math.random() < probability) {
+    return counterMoves[playerChoice];
+  }
+
+  // در غیر این صورت، حرکت مساوی یا حرکت بازنده
+  const otherMoves = Object.keys(choices).filter(
+    (move) => move !== counterMoves[playerChoice]
+  );
+
+  const randomIndex = Math.floor(
+    Math.random() * otherMoves.length
+  );
+
+  return otherMoves[randomIndex];
+}
+
+
+// ---------- تشخیص نتیجه ----------
 function getResult(player, computer) {
   if (player === computer) {
     return "draw";
@@ -139,146 +348,401 @@ function getResult(player, computer) {
     scissors: "paper"
   };
 
-  return winningMoves[player] === computer ? "win" : "lose";
+  return winningMoves[player] === computer
+    ? "win"
+    : "lose";
 }
 
-// فعال یا غیرفعال کردن دکمه‌ها
+
+// ---------- فعال و غیرفعال کردن دکمه‌ها ----------
 function setButtonsDisabled(disabled) {
   choiceButtons.forEach((button) => {
     button.disabled = disabled;
   });
 }
 
-// نمایش انتخاب‌ها
+
+// ---------- نمایش انتخاب‌ها ----------
 function showChoices(player, computer) {
-  playerChoiceElement.textContent = choices[player].emoji;
-  computerChoiceElement.textContent = choices[computer].emoji;
+  playerChoiceElement.textContent =
+    choices[player].emoji;
 
-  playerChoiceName.textContent = choices[player].name;
-  computerChoiceName.textContent = choices[computer].name;
+  computerChoiceElement.textContent =
+    choices[computer].emoji;
 
-  [playerChoiceElement, computerChoiceElement].forEach((element) => {
+  playerChoiceName.textContent =
+    choices[player].name;
+
+  computerChoiceName.textContent =
+    choices[computer].name;
+
+  [
+    playerChoiceElement,
+    computerChoiceElement
+  ].forEach((element) => {
     element.classList.remove("pop");
 
-    // راه‌اندازی دوباره انیمیشن
+    // اجرای دوباره انیمیشن
     void element.offsetWidth;
 
     element.classList.add("pop");
   });
 }
 
-// نمایش نتیجه
+
+// ---------- نمایش نتیجه هر دور ----------
 function showResult(result, player, computer) {
-  resultBox.classList.remove("win", "lose", "draw");
+  resultBox.classList.remove(
+    "win",
+    "lose",
+    "draw"
+  );
 
   if (result === "win") {
     resultBox.classList.add("win");
-    resultTitle.textContent = "🎉 آفرین قهرمان!";
+
+    resultTitle.textContent =
+      "🎉 آفرین قهرمان!";
+
     resultMessage.textContent =
       `${choices[player].name}، ${choices[computer].name} را شکست داد! یک امتیاز گرفتی.`;
+
+    playWinSound();
+
   } else if (result === "lose") {
     resultBox.classList.add("lose");
-    resultTitle.textContent = "🤖 این دور را باختی!";
+
+    resultTitle.textContent =
+      "🤖 این دور را باختی!";
+
     resultMessage.textContent =
       `${choices[computer].name}، ${choices[player].name} را شکست داد. دور بعدی جبران کن!`;
+
+    playLoseSound();
+
   } else {
     resultBox.classList.add("draw");
-    resultTitle.textContent = "🤝 مساوی شد!";
+
+    resultTitle.textContent =
+      "🤝 مساوی شد!";
+
     resultMessage.textContent =
       `هر دو ${choices[player].name} آوردید. این دور امتیازی ندارد.`;
+
+    playDrawSound();
   }
 }
 
-// به‌روزرسانی امتیازها
+
+// ---------- به‌روزرسانی امتیازها ----------
+
 function updateScoreboard() {
-  playerScoreElement.textContent = playerScore;
-  computerScoreElement.textContent = computerScore;
-  roundCountElement.textContent = `دور ${roundCount}`;
+  playerScoreElement.textContent =
+    String(playerScore);
+
+  computerScoreElement.textContent =
+    String(computerScore);
+
+  roundCountElement.textContent =
+    `دور ${String(roundCount)}`;
 }
 
-// اجرای یک دور بازی
+
+
+// ---------- بررسی برنده مسابقه ----------
+function checkMatchWinner() {
+  if (playerScore >= targetScore) {
+    gameOver = true;
+
+    resultBox.classList.remove(
+      "win",
+      "lose",
+      "draw"
+    );
+
+    resultBox.classList.add("win");
+
+    resultTitle.textContent =
+      "🏆 قهرمان مسابقه شدی!";
+
+    resultMessage.textContent =
+      `تبریک! با ${playerScore} امتیاز برنده شدی. کامپیوتر ${computerScore} امتیاز دارد.`;
+
+    return true;
+  }
+
+  if (computerScore >= targetScore) {
+    gameOver = true;
+
+    resultBox.classList.remove(
+      "win",
+      "lose",
+      "draw"
+    );
+
+    resultBox.classList.add("lose");
+
+    resultTitle.textContent =
+      "🤖 کامپیوتر قهرمان شد!";
+
+    resultMessage.textContent =
+      `کامپیوتر با ${computerScore} امتیاز برنده شد. امتیاز تو ${playerScore} است. دوباره تلاش کن!`;
+
+    return true;
+  }
+
+  return false;
+}
+
+
+// ---------- اجرای یک دور ----------
 function playRound(playerChoice) {
-  if (isPlaying || !Object.hasOwn(choices, playerChoice)) {
+  if (
+    isPlaying ||
+    gameOver ||
+    !Object.prototype.hasOwnProperty.call(
+      choices,
+      playerChoice
+    )
+  ) {
     return;
   }
 
   isPlaying = true;
   setButtonsDisabled(true);
 
-  const computerChoice = getComputerChoice();
+  try {
+    // انتخاب کامپیوتر
+    const computerChoice =
+      getComputerChoice(playerChoice);
 
-  // ثبت انتخاب‌ها
-  showChoices(playerChoice, computerChoice);
+    // نمایش انتخاب‌ها
+    showChoices(playerChoice, computerChoice);
 
-  // تعیین برنده
-  const result = getResult(playerChoice, computerChoice);
+    // تعیین نتیجه دور
+    const result =
+      getResult(playerChoice, computerChoice);
 
-  // به‌روزرسانی امتیاز
-  roundCount++;
+    // افزایش شمارش دور
+    roundCount++;
 
-  if (result === "win") {
-    playerScore++;
-  } else if (result === "lose") {
-    computerScore++;
+    // امتیاز فقط برای برنده دور
+    if (result === "win") {
+      playerScore++;
+    } else if (result === "lose") {
+      computerScore++;
+    }
+
+    // به‌روزرسانی صفحه
+    updateScoreboard();
+
+    // نمایش نتیجه دور
+    showResult(
+      result,
+      playerChoice,
+      computerChoice
+    );
+
+    // قفل شدن عدد هدف پس از شروع مسابقه
+    targetScoreInput.disabled = true;
+
+    // بررسی پایان مسابقه
+    checkMatchWinner();
+
+    // نمایش وضعیت امتیاز تا قهرمانی
+    if (!gameOver) {
+      updateTargetHint(
+        `هدف: ${targetScore} امتیاز | تو: ${playerScore} | کامپیوتر: ${computerScore}`
+      );
+    }
+
+  } catch (error) {
+    console.error(
+      "خطا در اجرای بازی:",
+      error
+    );
+
+    resultTitle.textContent =
+      "خطایی رخ داد!";
+
+    resultMessage.textContent =
+      "صفحه را رفرش کن و دوباره امتحان کن.";
+
+  } finally {
+    isPlaying = false;
+
+    // بعد از قهرمانی، انتخاب‌ها غیرفعال می‌مانند
+    setButtonsDisabled(gameOver);
   }
-
-  updateScoreboard();
-  showResult(result, playerChoice, computerChoice);
-
-if (result === "win") {
-  playWinSound();
-} else if (result === "lose") {
-  playLoseSound();
-} else {
-  playDrawSound();
 }
 
-  // پایان پردازش این دور
-  isPlaying = false;
-  setButtonsDisabled(false);
-}
 
-// اتصال دکمه‌ها به بازی
-
+// ---------- اتصال دکمه‌های سنگ، کاغذ و قیچی ----------
 choiceButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    if (isPlaying || gameOver) return;
+
     initAudio();
     playClickSound();
 
     const playerChoice = button.dataset.choice;
+
     playRound(playerChoice);
   });
 });
 
 
-// شروع مجدد
-
+// ---------- شروع مجدد مسابقه ----------
 resetButton.addEventListener("click", () => {
-  if (isPlaying) {
-    return;
-  }
+  if (isPlaying) return;
 
   initAudio();
-  playResetSound();
 
+  // خواندن هدف جدید یا حفظ هدف فعلی
+  const enteredValue = readTargetScore();
 
+  if (enteredValue !== null) {
+    targetScore = enteredValue;
+  }
+
+  // صفر کردن وضعیت مسابقه
   playerScore = 0;
   computerScore = 0;
   roundCount = 0;
 
+  gameOver = false;
+
+  // بازگرداندن انتخاب‌ها
   playerChoiceElement.textContent = "❔";
   computerChoiceElement.textContent = "❔";
 
-  playerChoiceName.textContent = "منتظر انتخاب...";
-  computerChoiceName.textContent = "منتظر شروع...";
+  playerChoiceName.textContent =
+    "منتظر انتخاب...";
 
-  resultBox.classList.remove("win", "lose", "draw");
+  computerChoiceName.textContent =
+    "منتظر شروع...";
 
-  resultTitle.textContent = "بازی از نو شروع شد!";
-  resultMessage.textContent = "یکی از گزینه‌های زیر را انتخاب کن.";
+  // بازگرداندن ظاهر نتیجه
+  resultBox.classList.remove(
+    "win",
+    "lose",
+    "draw"
+  );
+
+  resultTitle.textContent =
+    "بازی از نو شروع شد!";
+
+  resultMessage.textContent =
+    "یکی از گزینه‌های زیر را انتخاب کن.";
+
+  // باز کردن انتخاب هدف
+  targetScoreInput.disabled = false;
+  targetScoreInput.value = targetScore;
+
+  updateTargetHint(
+    `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
+  );
+
+  // فعال کردن دکمه‌ها
+  setButtonsDisabled(false);
 
   updateScoreboard();
+
+  playResetSound();
 });
 
-// نمایش وضعیت اولیه
+
+// ---------- روشن و خاموش کردن صدا ----------
+function updateSoundButton() {
+  if (!soundToggle || !soundIcon || !soundText) {
+    return;
+  }
+
+  soundToggle.classList.toggle(
+    "muted",
+    !soundEnabled
+  );
+
+  soundIcon.textContent =
+    soundEnabled ? "🔊" : "🔇";
+
+  soundText.textContent =
+    soundEnabled ? "صدا روشن" : "صدا خاموش";
+
+  soundToggle.setAttribute(
+    "aria-pressed",
+    String(soundEnabled)
+  );
+
+  soundToggle.setAttribute(
+    "aria-label",
+    soundEnabled
+      ? "خاموش کردن صدا"
+      : "روشن کردن صدا"
+  );
+}
+
+if (soundToggle) {
+  soundToggle.addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+
+    if (soundEnabled) {
+      initAudio();
+    }
+
+    updateSoundButton();
+
+    if (soundEnabled) {
+      playResetSound();
+    }
+  });
+}
+
+
+// ---------- درجه سختی بازی ----------
+if (difficultySelect && difficultyHint) {
+  function updateDifficultyHint() {
+    const hints = {
+      easy:
+        "🟢 کامپیوتر فقط ۲۰٪ مواقع حرکت برنده را انتخاب می‌کند.",
+
+      medium:
+        "🟣 کامپیوتر ۵۰٪ مواقع حرکت برنده را انتخاب می‌کند.",
+
+      hard:
+        "🔴 کامپیوتر ۸۰٪ مواقع حرکت برنده را انتخاب می‌کند!"
+    };
+
+    difficultyHint.textContent =
+      hints[difficultySelect.value] ||
+      hints.medium;
+  }
+
+  difficultySelect.addEventListener(
+    "change",
+    updateDifficultyHint
+  );
+
+  updateDifficultyHint();
+}
+
+
+// ---------- آماده‌سازی اولیه ----------
+const initialTarget = readTargetScore();
+
+if (initialTarget !== null) {
+  targetScore = initialTarget;
+} else {
+  targetScore = 10;
+  targetScoreInput.value = 10;
+}
+
+targetScoreInput.disabled = false;
+
+updateTargetHint(
+  `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
+);
+
 updateScoreboard();
+updateSoundButton();
+setButtonsDisabled(false);
