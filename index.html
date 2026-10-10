@@ -16,10 +16,63 @@
   <main class="game-container">
 
     <header class="header">
-      <div class="logo">⚡ NEON ARENA</div>
-      <p class="subtitle">نبردی برای اثبات مهارت تو!</p>
-      <span class="status"><span class="status-dot"></span> سیستم آماده است</span>
+      
+<header class="header">
+  <div class="arena-header">
+    <div class="logo">⚡ NEON ARENA</div>
+
+    <div class="difficulty-panel">
+      <label for="difficultySelect">⚡ درجه سختی بازی</label>
+
+      <select id="difficultySelect">
+        <option value="easy">🟢 آسان</option>
+        <option value="medium" selected>🟣 متوسط</option>
+        <option value="hard">🔴 سخت</option>
+      </select>
+
+      <p  id="difficultyHint">
+        یک چالش متعادل برای شروع!
+      </p>
+    </div>
+  </div>
+
+  <p class="subtitle">نبردی برای اثبات مهارت تو!</p>
+
+  <span class="status">
+    <span class="status-dot"></span>
+    سیستم آماده است
+  </span>
+</header>
+
     </header>
+
+<section class="target-score-panel">
+  <label for="targetScore">🎯 امتیاز هدف مسابقه</label>
+
+  <div class="target-score-control">
+    <input
+  
+  id="targetScore"
+  type="number"
+  min="1"
+  max="999"
+  step="1"
+  value="10"
+  inputmode="numeric"
+  lang="en"
+  dir="ltr"
+  aria-label="امتیاز هدف مسابقه"
+>
+
+    >
+
+    <span>امتیاز تا قهرمانی 🏆</span>
+  </div>
+
+  <p id="targetScoreHint">
+    قبل از شروع، امتیاز دلخواهت رو وارد کن.
+  </p>
+</section>
 
     <section class="scoreboard">
       <div class="score-card player-card">
@@ -67,6 +120,11 @@
         <p id="resultMessage">یکی از گزینه‌های زیر را انتخاب کن.</p>
       </div>
 
+  <p class="difficulty-hint" id="difficultyHint">
+    یک چالش متعادل برای شروع!
+  </p>
+</div>
+
       <div class="choices">
         <button class="choice-button rock" data-choice="rock">
           <span class="choice-emoji">🪨</span>
@@ -87,9 +145,19 @@
         </button>
       </div>
 
-      <button id="resetButton" class="reset-button">
-        ↻ شروع مجدد بازی
-      </button>
+      
+<div class="game-controls">
+  <button id="soundToggle" class="sound-button" type="button"
+          aria-pressed="true" aria-label="خاموش کردن صدا">
+    <span id="soundIcon">🔊</span>
+    <span id="soundText">صدا روشن</span>
+  </button>
+
+  <button id="resetButton" class="reset-button" type="button">
+    ↻ شروع مجدد بازی
+  </button>
+</div>
+
     </section>
 
     <footer>
