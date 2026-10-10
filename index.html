@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b20">
+  <title> 🧮 Neon Arena | سنگ کاغذ قیچی</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="background-glow glow-one"></div>
+  <div class="background-glow glow-two"></div>
+
+  <main class="game-container">
+
+    <header class="header">
+      <div class="logo">⚡ NEON ARENA</div>
+      <p class="subtitle">نبردی برای اثبات مهارت تو!</p>
+      <span class="status"><span class="status-dot"></span> سیستم آماده است</span>
+    </header>
+
+    <section class="scoreboard">
+      <div class="score-card player-card">
+        <span class="player-icon">👑</span>
+        <p>بازیکن</p>
+        <strong id="playerScore">0</strong>
+        <small>امتیاز تو</small>
+      </div>
+
+      <div class="score-center">
+        <span>VS</span>
+        <small id="roundCount">دور ۰</small>
+      </div>
+
+      <div class="score-card computer-card">
+        <span class="player-icon">🤖</span>
+        <p>کامپیوتر</p>
+        <strong id="computerScore">0</strong>
+        <small>امتیاز رقیب</small>
+      </div>
+    </section>
+
+    <section class="arena">
+      <h2>آماده‌ای مبارزه کنیم؟</h2>
+      <p class="instruction">حرکت خودت را انتخاب کن</p>
+
+      <div class="battlefield">
+        <div class="fighter">
+          <span class="fighter-label">تو انتخاب کردی</span>
+          <div class="choice-display" id="playerChoice">❔</div>
+          <span id="playerChoiceName">منتظر انتخاب...</span>
+        </div>
+
+        <div class="versus">VS</div>
+
+        <div class="fighter">
+          <span class="fighter-label">انتخاب کامپیوتر</span>
+          <div class="choice-display" id="computerChoice">❔</div>
+          <span id="computerChoiceName">منتظر شروع...</span>
+        </div>
+      </div>
+
+      <div id="resultBox" class="result-box" aria-live="polite">
+        <strong id="resultTitle">بازی شروع نشده!</strong>
+        <p id="resultMessage">یکی از گزینه‌های زیر را انتخاب کن.</p>
+      </div>
+
+      <div class="choices">
+        <button class="choice-button rock" data-choice="rock">
+          <span class="choice-emoji">🪨</span>
+          <span>سنگ</span>
+          <small>ROCK</small>
+        </button>
+
+        <button class="choice-button paper" data-choice="paper">
+          <span class="choice-emoji">📄</span>
+          <span>کاغذ</span>
+          <small>PAPER</small>
+        </button>
+
+        <button class="choice-button scissors" data-choice="scissors">
+          <span class="choice-emoji">✂️</span>
+          <span>قیچی</span>
+          <small>SCISSORS</small>
+        </button>
+      </div>
+
+      <button id="resetButton" class="reset-button">
+        ↻ شروع مجدد بازی
+      </button>
+    </section>
+
+    <footer>
+      <p>ساخته شده توسط علی اصغریان ❤️  </p>
+      <span>NEON ARENA © 2026</span>
+    </footer>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
