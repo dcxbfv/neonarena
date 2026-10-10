@@ -3,7 +3,7 @@
 
 // ==========================================
 // NEON ARENA - Rock Paper Scissors
-// نسخه مسابقاتی با امتیاز هدف
+// Target Score Tournament Edition
 // ==========================================
 
 
@@ -46,10 +46,7 @@ function playTone(
     const startTime = audioContext.currentTime + delay;
 
     oscillator.type = type;
-    oscillator.frequency.setValueAtTime(
-      frequency,
-      startTime
-    );
+    oscillator.frequency.setValueAtTime(frequency, startTime);
 
     gain.gain.setValueAtTime(0.001, startTime);
     gain.gain.exponentialRampToValueAtTime(
@@ -174,12 +171,10 @@ const choices = {
     emoji: "🪨",
     name: "سنگ"
   },
-
   paper: {
     emoji: "📄",
     name: "کاغذ"
   },
-
   scissors: {
     emoji: "✂️",
     name: "قیچی"
@@ -197,28 +192,7 @@ let gameOver = false;
 let targetScore = 10;
 
 
-// ---------- بررسی عناصر ضروری ----------
-if (
-  !playerScoreElement ||
-  !computerScoreElement ||
-  !roundCountElement ||
-  !playerChoiceElement ||
-  !computerChoiceElement ||
-  !playerChoiceName ||
-  !computerChoiceName ||
-  !resultBox ||
-  !resultTitle ||
-  !resultMessage ||
-  !resetButton ||
-  !targetScoreInput
-) {
-  console.error(
-    "بعضی از عناصر HTML بازی پیدا نشدند. index.html را بررسی کن."
-  );
-}
-
-
-// ---------- تعیین امتیاز هدف ----------
+// ---------- امتیاز هدف ----------
 function readTargetScore() {
   const value = Number(targetScoreInput.value);
 
@@ -240,9 +214,8 @@ function updateTargetHint(message) {
 }
 
 function handleTargetScoreChange() {
-  // بعد از شروع مسابقه، هدف تا ریست بعدی ثابت می‌ماند.
   if (roundCount > 0 || gameOver || isPlaying) {
-    targetScoreInput.value = targetScore;
+    targetScoreInput.value = String(targetScore);
 
     updateTargetHint(
       `هدف این مسابقه ${targetScore} امتیاز است. برای تغییر، بازی را از نو شروع کن.`
@@ -254,17 +227,17 @@ function handleTargetScoreChange() {
   const value = readTargetScore();
 
   if (value === null) {
-    targetScoreInput.value = targetScore;
+    targetScoreInput.value = String(targetScore);
 
     updateTargetHint(
-      "عدد هدف باید یک عدد صحیح بین ۱ تا ۹۹۹ باشد."
+      "عدد هدف باید یک عدد صحیح بین 1 تا 999 باشد."
     );
 
     return;
   }
 
   targetScore = value;
-  targetScoreInput.value = targetScore;
+  targetScoreInput.value = String(targetScore);
 
   updateTargetHint(
     `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
@@ -276,25 +249,22 @@ targetScoreInput.addEventListener(
   handleTargetScoreChange
 );
 
-targetScoreInput.addEventListener(
-  "input",
-  () => {
-    if (roundCount > 0 || gameOver || isPlaying) {
-      targetScoreInput.value = targetScore;
-      return;
-    }
-
-    const value = readTargetScore();
-
-    if (value !== null) {
-      targetScore = value;
-
-      updateTargetHint(
-        `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
-      );
-    }
+targetScoreInput.addEventListener("input", () => {
+  if (roundCount > 0 || gameOver || isPlaying) {
+    targetScoreInput.value = String(targetScore);
+    return;
   }
-);
+
+  const value = readTargetScore();
+
+  if (value !== null) {
+    targetScore = value;
+
+    updateTargetHint(
+      `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
+    );
+  }
+});
 
 
 // ---------- انتخاب کامپیوتر ----------
@@ -318,12 +288,12 @@ function getComputerChoice(playerChoice) {
   const probability =
     counterProbability[difficulty] ?? 0.50;
 
-  // احتمال انتخاب حرکت برنده بر اساس درجه سختی
+  // احتمال انتخاب حرکت برنده
   if (Math.random() < probability) {
     return counterMoves[playerChoice];
   }
 
-  // در غیر این صورت، حرکت مساوی یا حرکت بازنده
+  // انتخاب بین حرکت مساوی و حرکت بازنده
   const otherMoves = Object.keys(choices).filter(
     (move) => move !== counterMoves[playerChoice]
   );
@@ -354,7 +324,7 @@ function getResult(player, computer) {
 }
 
 
-// ---------- فعال و غیرفعال کردن دکمه‌ها ----------
+// ---------- کنترل دکمه‌ها ----------
 function setButtonsDisabled(disabled) {
   choiceButtons.forEach((button) => {
     button.disabled = disabled;
@@ -392,11 +362,7 @@ function showChoices(player, computer) {
 
 // ---------- نمایش نتیجه هر دور ----------
 function showResult(result, player, computer) {
-  resultBox.classList.remove(
-    "win",
-    "lose",
-    "draw"
-  );
+  resultBox.classList.remove("win", "lose", "draw");
 
   if (result === "win") {
     resultBox.classList.add("win");
@@ -434,8 +400,7 @@ function showResult(result, player, computer) {
 }
 
 
-// ---------- به‌روزرسانی امتیازها ----------
-
+// ---------- به‌روزرسانی امتیازها با رقم انگلیسی ----------
 function updateScoreboard() {
   playerScoreElement.textContent =
     String(playerScore);
@@ -448,18 +413,12 @@ function updateScoreboard() {
 }
 
 
-
-// ---------- بررسی برنده مسابقه ----------
+// ---------- بررسی قهرمان مسابقه ----------
 function checkMatchWinner() {
   if (playerScore >= targetScore) {
     gameOver = true;
 
-    resultBox.classList.remove(
-      "win",
-      "lose",
-      "draw"
-    );
-
+    resultBox.classList.remove("win", "lose", "draw");
     resultBox.classList.add("win");
 
     resultTitle.textContent =
@@ -468,18 +427,17 @@ function checkMatchWinner() {
     resultMessage.textContent =
       `تبریک! با ${playerScore} امتیاز برنده شدی. کامپیوتر ${computerScore} امتیاز دارد.`;
 
+    updateTargetHint(
+      `🏆 تو با ${playerScore} امتیاز قهرمان شدی!`
+    );
+
     return true;
   }
 
   if (computerScore >= targetScore) {
     gameOver = true;
 
-    resultBox.classList.remove(
-      "win",
-      "lose",
-      "draw"
-    );
-
+    resultBox.classList.remove("win", "lose", "draw");
     resultBox.classList.add("lose");
 
     resultTitle.textContent =
@@ -487,6 +445,10 @@ function checkMatchWinner() {
 
     resultMessage.textContent =
       `کامپیوتر با ${computerScore} امتیاز برنده شد. امتیاز تو ${playerScore} است. دوباره تلاش کن!`;
+
+    updateTargetHint(
+      `🤖 کامپیوتر با ${computerScore} امتیاز قهرمان شد.`
+    );
 
     return true;
   }
@@ -512,55 +474,44 @@ function playRound(playerChoice) {
   setButtonsDisabled(true);
 
   try {
-    // انتخاب کامپیوتر
     const computerChoice =
       getComputerChoice(playerChoice);
 
-    // نمایش انتخاب‌ها
     showChoices(playerChoice, computerChoice);
 
-    // تعیین نتیجه دور
     const result =
       getResult(playerChoice, computerChoice);
 
-    // افزایش شمارش دور
     roundCount++;
 
-    // امتیاز فقط برای برنده دور
     if (result === "win") {
       playerScore++;
     } else if (result === "lose") {
       computerScore++;
     }
 
-    // به‌روزرسانی صفحه
     updateScoreboard();
 
-    // نمایش نتیجه دور
     showResult(
       result,
       playerChoice,
       computerChoice
     );
 
-    // قفل شدن عدد هدف پس از شروع مسابقه
+    // قفل هدف پس از شروع مسابقه
     targetScoreInput.disabled = true;
 
-    // بررسی پایان مسابقه
+    // بررسی اینکه آیا مسابقه تمام شده است
     checkMatchWinner();
 
-    // نمایش وضعیت امتیاز تا قهرمانی
     if (!gameOver) {
       updateTargetHint(
-        `هدف: ${targetScore} امتیاز | تو: ${playerScore} | کامپیوتر: ${computerScore}`
+        `هدف: ${targetScore} | تو: ${playerScore} | کامپیوتر: ${computerScore}`
       );
     }
 
   } catch (error) {
-    console.error(
-      "خطا در اجرای بازی:",
-      error
-    );
+    console.error("خطا در اجرای بازی:", error);
 
     resultTitle.textContent =
       "خطایی رخ داد!";
@@ -571,13 +522,13 @@ function playRound(playerChoice) {
   } finally {
     isPlaying = false;
 
-    // بعد از قهرمانی، انتخاب‌ها غیرفعال می‌مانند
+    // بعد از پایان مسابقه، انتخاب‌ها غیرفعال می‌مانند
     setButtonsDisabled(gameOver);
   }
 }
 
 
-// ---------- اتصال دکمه‌های سنگ، کاغذ و قیچی ----------
+// ---------- دکمه‌های سنگ، کاغذ و قیچی ----------
 choiceButtons.forEach((button) => {
   button.addEventListener("click", () => {
     if (isPlaying || gameOver) return;
@@ -598,14 +549,14 @@ resetButton.addEventListener("click", () => {
 
   initAudio();
 
-  // خواندن هدف جدید یا حفظ هدف فعلی
+  // خواندن هدف معتبر واردشده
   const enteredValue = readTargetScore();
 
   if (enteredValue !== null) {
     targetScore = enteredValue;
   }
 
-  // صفر کردن وضعیت مسابقه
+  // صفر کردن امتیازها و دورها
   playerScore = 0;
   computerScore = 0;
   roundCount = 0;
@@ -623,11 +574,7 @@ resetButton.addEventListener("click", () => {
     "منتظر شروع...";
 
   // بازگرداندن ظاهر نتیجه
-  resultBox.classList.remove(
-    "win",
-    "lose",
-    "draw"
-  );
+  resultBox.classList.remove("win", "lose", "draw");
 
   resultTitle.textContent =
     "بازی از نو شروع شد!";
@@ -635,17 +582,15 @@ resetButton.addEventListener("click", () => {
   resultMessage.textContent =
     "یکی از گزینه‌های زیر را انتخاب کن.";
 
-  // باز کردن انتخاب هدف
+  // باز کردن کادر هدف برای مسابقه جدید
   targetScoreInput.disabled = false;
-  targetScoreInput.value = targetScore;
+  targetScoreInput.value = String(targetScore);
 
   updateTargetHint(
     `مسابقه تا رسیدن به ${targetScore} امتیاز ادامه دارد.`
   );
 
-  // فعال کردن دکمه‌ها
   setButtonsDisabled(false);
-
   updateScoreboard();
 
   playResetSound();
@@ -699,23 +644,22 @@ if (soundToggle) {
 }
 
 
-// ---------- درجه سختی بازی ----------
+// ---------- درجه سختی ----------
 if (difficultySelect && difficultyHint) {
   function updateDifficultyHint() {
     const hints = {
       easy:
-        "🟢 کامپیوتر فقط ۲۰٪ مواقع حرکت برنده را انتخاب می‌کند.",
+        "🟢 کامپیوتر 20٪ مواقع حرکت برنده را انتخاب می‌کند.",
 
       medium:
-        "🟣 کامپیوتر ۵۰٪ مواقع حرکت برنده را انتخاب می‌کند.",
+        "🟣 کامپیوتر 50٪ مواقع حرکت برنده را انتخاب می‌کند.",
 
       hard:
-        "🔴 کامپیوتر ۸۰٪ مواقع حرکت برنده را انتخاب می‌کند!"
+        "🔴 کامپیوتر 80٪ مواقع حرکت برنده را انتخاب می‌کند!"
     };
 
     difficultyHint.textContent =
-      hints[difficultySelect.value] ||
-      hints.medium;
+      hints[difficultySelect.value] || hints.medium;
   }
 
   difficultySelect.addEventListener(
@@ -734,7 +678,7 @@ if (initialTarget !== null) {
   targetScore = initialTarget;
 } else {
   targetScore = 10;
-  targetScoreInput.value = 10;
+  targetScoreInput.value = "10";
 }
 
 targetScoreInput.disabled = false;
