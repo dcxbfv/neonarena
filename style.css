@@ -491,3 +491,282 @@ footer span {
     scroll-behavior: auto !important;
   }
 }
+
+/* کنترل‌های بازی */
+.game-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+/* دکمه روشن و خاموش صدا */
+.sound-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 20px;
+  border: 1px solid var(--cyan);
+  border-radius: 30px;
+  background: rgba(39, 245, 237, 0.08);
+  color: var(--cyan);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(39, 245, 237, 0.12);
+  transition: transform 0.2s, box-shadow 0.2s,
+              background 0.2s, color 0.2s;
+}
+
+.sound-button:hover {
+  transform: translateY(-3px);
+  background: rgba(39, 245, 237, 0.16);
+  box-shadow: 0 0 22px rgba(39, 245, 237, 0.3);
+}
+
+.sound-button:active {
+  transform: scale(0.94);
+}
+
+.sound-button #soundIcon {
+  font-size: 18px;
+}
+
+/* وضعیت صدای خاموش */
+.sound-button.muted {
+  color: var(--pink);
+  border-color: var(--pink);
+  background: rgba(255, 66, 200, 0.08);
+  box-shadow: 0 0 12px rgba(255, 66, 200, 0.12);
+}
+
+.sound-button.muted:hover {
+  background: rgba(255, 66, 200, 0.16);
+  box-shadow: 0 0 22px rgba(255, 66, 200, 0.3);
+}
+
+.sound-button:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+}
+
+/* فاصله دکمه شروع مجدد از کنترل‌ها */
+.game-controls .reset-button {
+  margin-top: 0;
+}
+
+/* پنل درجه سختی Neon Arena */
+.difficulty-panel {
+  width: min(100%, 360px);
+  margin: 0 auto 24px;
+  padding: 18px;
+  text-align: center;
+  border: 1px solid rgba(0, 255, 220, 0.35);
+  border-radius: 20px;
+  background: rgba(15, 20, 45, 0.75);
+  box-shadow:
+    0 0 18px rgba(0, 255, 220, 0.08),
+    inset 0 0 16px rgba(180, 70, 255, 0.06);
+}
+
+.difficulty-panel label {
+  display: block;
+  margin-bottom: 12px;
+  color: #75fff0;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+#difficultySelect {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #a855f7;
+  border-radius: 12px;
+  background: #17132e;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#difficultySelect:focus {
+  border-color: #45ffe0;
+  box-shadow: 0 0 14px rgba(69, 255, 224, 0.35);
+}
+
+#difficultySelect option {
+  background: #17132e;
+  color: #ffffff;
+}
+
+.difficulty-hint {
+  margin: 12px 0 0;
+  color: #d7c8ff;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* کوچک‌تر کردن فونت پنل درجه سختی */
+.arena-header .difficulty-panel label {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.arena-header #difficultySelect {
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+.arena-header .difficulty-hint {
+  font-size: 11px;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* چیدمان عنوان و درجه سختی؛ حفظ ظاهر نئونی */
+.arena-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.arena-header .logo {
+  flex: 1;
+  min-width: 0;
+}
+
+.arena-header .difficulty-panel {
+  flex: 0 1 240px;
+  width: 240px;
+  margin: 0;
+  padding: 12px;
+}
+
+.arena-header .difficulty-panel label {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.arena-header #difficultySelect {
+  font-size: 12px;
+  padding: 8px 10px;
+}
+
+.arena-header .difficulty-hint {
+  font-size: 11px;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* پنل امتیاز هدف */
+.target-score-panel {
+  width: 100%;
+  margin: 0 0 22px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid rgba(255, 66, 200, 0.3);
+  border-radius: 20px;
+  background: rgba(28, 20, 51, 0.88);
+  box-shadow:
+    0 0 18px rgba(255, 66, 200, 0.08),
+    inset 0 0 16px rgba(39, 245, 237, 0.04);
+}
+
+.target-score-panel > label {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--cyan);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.target-score-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#targetScore {
+  width: 105px;
+  padding: 10px;
+  border: 1px solid var(--pink);
+  border-radius: 12px;
+  outline: none;
+  background: #17132e;
+  color: var(--cyan);
+  font-family: Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  direction: ltr;
+  box-shadow: 0 0 12px rgba(255, 66, 200, 0.08);
+}
+
+#targetScore:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 15px rgba(39, 245, 237, 0.25);
+}
+
+#targetScore:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.target-score-control span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+#targetScoreHint {
+  margin-top: 10px;
+  color: #d7c8ff;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* نمایش مناسب در موبایل */
+@media (max-width: 600px) {
+  .arena-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .arena-header .logo {
+    flex: initial;
+    font-size: clamp(27px, 8vw, 38px);
+  }
+
+  .arena-header .difficulty-panel {
+    flex: initial;
+    width: min(100%, 360px);
+  }
+}
+
+/* نمایش انگلیسی اعداد امتیاز و هدف */
+#playerScore,
+#computerScore,
+#roundCount,
+#targetScore {
+  direction: ltr;
+  font-family: Arial, sans-serif;
+  font-variant-numeric: lining-nums;
+}
+
+/* اعداد انگلیسی در کادر امتیاز هدف */
+#targetScore {
+  direction: ltr !important;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-variant-numeric: lining-nums;
+  unicode-bidi: isolate;
+}
