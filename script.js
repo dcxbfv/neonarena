@@ -1,5 +1,6 @@
 
 "use strict";
+//Development By Ali Asgharian =)
 
 // ==========================================
 // NEON ARENA - Rock Paper Scissors
@@ -746,3 +747,5 @@ updateTargetHint(
 updateScoreboard();
 updateSoundButton();
 setButtonsDisabled(false);
+
+//Development By Ali Asgharian =)
